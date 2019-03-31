@@ -1,0 +1,287 @@
+'.text.xml':
+  'ROS2 pure python package':
+    'prefix': 'ros2_package_py'
+    'body': """
+      <?xml version="1.0"?>
+      <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+      <package format="3">
+        <name>$1</name>
+        <version>0.0.0</version>
+        <description>
+        $2
+        </description>
+        <maintainer email="samuel@dynorobotics.se">Samuel Lindgren</maintainer>
+        <license>Apache License 2.0</license>
+
+        <exec_depend>rclpy</exec_depend>
+
+        <test_depend>ament_copyright</test_depend>
+        <test_depend>ament_flake8</test_depend>
+        <test_depend>ament_pep257</test_depend>
+        <test_depend>python3-pytest</test_depend>
+
+        <export>
+          <build_type>ament_python</build_type>
+        </export>
+      </package>
+      """
+
+  'ROS2 pure cpp package':
+    'prefix': 'ros2_package_cpp'
+    'body': """
+      <?xml version="1.0"?>
+      <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+      <package format="3">
+        <name>$1</name>
+        <version>0.0.0</version>
+        <description>
+          $2
+        </description>
+        <maintainer email="samuel@dynorobotics.se">Samuel Lindgren</maintainer>
+        <license>Apache License 2.0</license>
+
+        <buildtool_depend>ament_cmake</buildtool_depend>
+
+        <build_depend>example_interfaces</build_depend>
+        <build_depend>rclcpp</build_depend>
+        <build_depend>rcutils</build_depend>
+        <build_depend>rmw</build_depend>
+        <build_depend>rmw_implementation_cmake</build_depend>
+
+        <exec_depend>launch_ros</exec_depend>
+        <exec_depend>rclcpp</exec_depend>
+        <exec_depend>rcutils</exec_depend>
+        <exec_depend>rmw</exec_depend>
+
+        <test_depend>ament_cmake_pytest</test_depend>
+        <test_depend>ament_lint_auto</test_depend>
+        <test_depend>ament_lint_common</test_depend>
+        <test_depend>launch</test_depend>
+        <test_depend>launch_testing</test_depend>
+
+        <export>
+          <build_type>ament_cmake</build_type>
+        </export>
+      </package>
+      """
+
+'.source.python':
+
+  'Sam Dyno Licence':
+    'prefix': 'licence_py'
+    'body': """
+      # License: Apache License 2.0
+      # https://github.com/DynoRobotics/dyno-licence/raw/master/LICENCE_APACHE_SAM
+      # Author: Samuel Lindgren
+      """
+
+  'ROS2 python node':
+    'prefix': 'ros2_node'
+    'body': """
+      ##############################################################################
+      # Imports
+      ##############################################################################
+      import rclpy
+      from rclpy.node import Node
+
+
+      ##############################################################################
+      # Classes
+      ##############################################################################
+      class $1(Node):
+
+          def __init__(self):
+              super().__init__('temp_name')  # TODO: replace with node name
+
+
+      def main(args=None):
+          rclpy.init(args=args)
+
+          node = $1()
+
+          rclpy.spin(node)
+
+          node.destroy_node()
+          rclpy.shutdown()
+
+
+      ##############################################################################
+      # Main
+      ##############################################################################
+      if __name__ == '__main__':
+          main()
+      """
+
+  'ROS2 python setup':
+    'prefix': 'ros2_setup'
+    'body': """
+      from setuptools import find_packages
+      from setuptools import setup
+
+      package_name = '$1'
+
+      setup(
+          name=package_name,
+          version='0.0.0',
+          packages=find_packages(exclude=['test']),
+          data_files=[
+              ('share/ament_index/resource_index/packages',
+                  ['resource/' + package_name]),
+              ('share/' + package_name, ['package.xml']),
+          ],
+          install_requires=['setuptools'],
+          zip_safe=True,
+          author='Samuel Lindgren',
+          author_email='samuel@dynorobotics.se',
+          maintainer='Samuel Lindgren',
+          maintainer_email='samuel@dynorobotics.se',
+          keywords=['ROS'],
+          classifiers=[
+              'Intended Audience :: Developers',
+              'License :: OSI Approved :: Apache License 2.0',
+              'Programming Language :: Python',
+          ],
+          description=(
+              $2
+          ),
+          license='Apache Licence 2.0',
+          tests_require=['pytest'],
+          entry_points={
+              'console_scripts': [
+                  # TODO: add scripts, format: 'listener = demo_nodes_py.topics.listener:main'
+              ],
+          },
+      )
+      """
+
+'.source.cpp':
+  'Sam Dyno Licence':
+    'prefix': 'licence_cpp'
+    'body': """
+      // License:  Apache License 2.0
+      // https://github.com/DynoRobotics/dyno-licence/raw/master/LICENCE_APACHE_SAM
+      // Author: Samuel Lindgren
+      """
+  'ROS2 log info':
+    'prefix': 'loginfo'
+    'body': 'RCLCPP_INFO(get_logger(), "$1");'
+
+  'ROS2 node':
+    'prefix': 'ros2_node_cpp'
+    'body': """
+      #include <chrono>
+      #include <cstdio>
+      #include <memory>
+      #include <string>
+
+      #include <rclcpp/rclcpp.hpp>
+      #include <rcutils/cmdline_parser.h>
+
+      using namespace std::chrono_literals;
+
+      void print_usage()
+      {
+        printf("Usage for app:\\\\n");
+        printf("$1 [-h]\\\\n");
+        printf("options:\\\\n");
+        printf("-h : Print this help function.\\\\n");
+      }
+
+      class $2 : public rclcpp::Node
+      {
+      public:
+        explicit $2()
+        : Node("$1")
+        {
+
+        }
+
+      private:
+      };
+
+      int main(int argc, char * argv[])
+      {
+        setvbuf(stdout, NULL, _IONBF, BUFSIZ);
+
+        if (rcutils_cli_option_exist(argv, argv + argc, "-h")) {
+          print_usage();
+          return 0;
+        }
+
+        rclcpp::init(argc, argv);
+
+        // auto option = std::string("option")
+        // char * cli_option = rcutils_cli_get_option(argv, argv + argc, "-o");
+        // if (nullptr != cli_option) {
+        //  option = std::string(cli_option);
+        // }
+
+        auto node = std::make_shared<$2>();
+
+        rclcpp::spin(node);
+
+        rclcpp::shutdown();
+        return 0;
+      }
+      """
+
+'.source.cmake':
+  'ROS2 CMakeLists for cpp':
+    'prefix': 'ros2_cmake_cpp'
+    'body': """
+      cmake_minimum_required(VERSION 3.5)
+
+      project($1)
+
+      # Default to C++14
+      if(NOT CMAKE_CXX_STANDARD)
+        set(CMAKE_CXX_STANDARD 14)
+      endif()
+
+      if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-Wall -Wextra -Wpedantic)
+      endif()
+
+      find_package(ament_cmake REQUIRED)
+      find_package(rclcpp REQUIRED)
+      find_package(rcutils)
+      find_package(rmw REQUIRED)
+
+      add_executable($2 src/$3.cpp)
+      ament_target_dependencies($2
+        "rclcpp"
+        "rcutils" )
+      install(TARGETS $2
+      DESTINATION lib/${PROJECT_NAME})
+
+      if(BUILD_TESTING)
+        find_package(ament_lint_auto REQUIRED)
+        ament_lint_auto_find_test_dependencies()
+
+        find_package(ament_cmake_pytest REQUIRED)
+        find_package(rmw_implementation_cmake REQUIRED)
+
+        # ament_add_pytest_test(test_name
+        #   test_path
+        #   TIMEOUT 30)
+
+      endif()
+
+      # Install launch files.
+      install(DIRECTORY
+        launch
+        DESTINATION share/${PROJECT_NAME}/
+      )
+
+      ament_package()
+    """
+
+'.text.plain':
+  'ROS2 pure python package':
+    'prefix': 'ros2_config_py'
+    'body': """
+      [develop]
+      script-dir=$base/lib/$1
+      [install]
+      install-scripts=$base/lib/$1
+      """
